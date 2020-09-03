@@ -13,7 +13,8 @@ export class UsersService {
     private userRepository: UserRepository,
   ) {}
   
-  async createAdminUser(createUserDto: CreateUserDto): Promise<User> {
+  async createAdminUser(createUserDto: CreateUserDto): Promise<User>
+  {
     if (createUserDto.password != createUserDto.passwordConfirmation) {
       throw new UnprocessableEntityException('As senhas não conferem');
     } else {
@@ -21,7 +22,8 @@ export class UsersService {
     }
   }
 
-  async findUserById(userId: string): Promise<User>{
+  async findUserById(userId: string): Promise<User>
+  {
     const user = await this.userRepository.findOne(userId, {
       select: ['email', 'name', 'role', 'id'],
     });
@@ -32,7 +34,8 @@ export class UsersService {
 
   }
 
-  async updateUser(updateUserDto: UpdateUserDto, id: string): Promise<User>{
+  async updateUser(updateUserDto: UpdateUserDto, id: string): Promise<User>
+  {
     const user = await this.findUserById(id);
     const { name, email, role, status } = updateUserDto;
     user.name   = name  ? name : user.name;
@@ -44,6 +47,14 @@ export class UsersService {
       return user;
     }catch(error){
       throw new InternalServerErrorException("Erro ao salvar os dados no banco!");
+    }
+  }
+
+  async deleteUser(userId: string)
+  {
+    const result = await this.userRepository.delete({ id: userId });
+    if(result.affected === 0){
+      throw new NotFoundException("NNenhum usuário com o ID informado!");
     }
   }
 
